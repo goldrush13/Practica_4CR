@@ -20,10 +20,16 @@ int main(void)
         ADC0_InSeq1(Result);
         ADC1_InSeq0(Result);
         
-        valor=(float)(((Result[0]))*3.3)/4096;
-        valor1=(float)(((Result[1]))*3.3)/4096;
+        ch1 = (uint16_t)(Result[0]);
+        ch2 = (uint16_t)(Result[1]);
+        ch3 = (uint16_t)(Result[2]);
+        ch4 = (uint16_t)(Result[3]);
+        ch5 = (uint16_t)(Result[4]);
+        ch6 = (uint16_t)(Result[5]);
         
-
+        
+        //valor=(float)(((Result[0]))*3.3)/4096;
+        //valor1=(float)(((Result[1]))*3.3)/4096;
     }
 
 }
