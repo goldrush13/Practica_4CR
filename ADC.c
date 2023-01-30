@@ -100,19 +100,19 @@ extern void Configura_Reg_ADC0(void)
 
 extern void ADC0_InSeq1(uint16_t Result[6])
 {
-       ADC0->PSSI = 0x00000002;
-       while((ADC0->RIS&0x02)==0){};
-       Result[0] = ADC0->SSFIFO1&0xFFF;
-       Result[1] = ADC0->SSFIFO1&0xFFF;
-       Result[2] = ADC0->SSFIFO1&0xFFF;
-       ADC0->ISC = 0x0002; 
+    ADC0->PSSI = 0x00000002;
+    while((ADC0->RIS&0x02)==0){};
+    Result[0] = ADC0->SSFIFO1&0xFFF;
+    Result[1] = ADC0->SSFIFO1&0xFFF;
+    Result[2] = ADC0->SSFIFO1&0xFFF;
+    ADC0->ISC = 0x0002; 
 }
 
 extern void ADC1_InSeq0(uint16_t Result[6])
 {
-       ADC1->PSSI = 0x00000004;
-       while((ADC1->RIS&0x04)==0){};
-       Result[3] = ADC1->SSFIFO2&0xFFF; 
-       Result[4] = ADC1->SSFIFO2&0xFFF;
-       ADC1->ISC = 0x0004;
+    ADC1->PSSI = 0x00000004;
+    while((ADC1->RIS&0x04)==0){};
+    Result[3] = ADC1->SSFIFO2&0xFFF; 
+    Result[4] = ADC1->SSFIFO2&0xFFF;
+    ADC1->ISC = 0x0004;
 }
