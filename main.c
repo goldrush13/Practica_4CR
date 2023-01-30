@@ -4,7 +4,7 @@ int main(void)
 {
     Configurar_PLL();  //Confiuracion de velocidad de reloj (20MHz)
     Configura_Reg_ADC0();
-    Configurar_UART0();
+    Configurar_UART5();
 
     // VARIABLES
     uint16_t Result[6]; // 6 canales

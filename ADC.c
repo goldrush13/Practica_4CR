@@ -8,7 +8,7 @@
 
 extern void Configura_Reg_ADC0(void)
 {
-    /*
+
 /*Usando el modulo 0 y 1 , configurar la tarjeta a la frecuencia asignada,
     * para adquirir 6 señales analógicas a una velocidad de 1 millón de muestras 
     * por segundo, por los canales asignados  y guardar los valores en un arreglo 
@@ -81,8 +81,8 @@ extern void Configura_Reg_ADC0(void)
     ADC1->SSMUX0 = 0x0578; //canal 5, 7, 8 ->modulo 1
     
     //pag 868 Este registro (ADCSSCTL2), configura el bit de control de muestreo y la interrupción
-    ADC0->SSCTL1 = ();
-    ADC1->SSCTL0 = ();
+    ADC0->SSCTL1 = (0x00000644);
+    ADC1->SSCTL0 = (0x00000644);
 
     /* Enable ADC Interrupt */
     ADC0->IM |= (1<<1); /* Unmask ADC0 sequence 2 interrupt pag 1082*/
