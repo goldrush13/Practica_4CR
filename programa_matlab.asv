@@ -1,0 +1,64 @@
+clc; clear; close all;
+
+puertoserial = serialport("COM7",9600);
+muestras = 50000;
+i = 0;
+
+senales = cell(1, 6); 
+for k = 1:6
+    senales{k} = zeros(1, muestras);
+end
+
+% Lectura 
+canal = 1;
+valorn = 1;
+
+% Figura
+title('ADC', 'Interpreter', 'latex', 'FontName','Times New Roman','FontSize', 16);
+xlabel('Tiempo','Interpreter', 'latex','FontName','Times New Roman','FontSize',12);
+ylabel('Voltaje', 'Interpreter', 'latex', 'FontSize', 12);
+grid on; 
+hold on;
+
+tiempo = 1:1:muestras;
+ylim([0 3.5]);
+xlim([0 muestras]);
+
+
+adc0 = animatedline('Color', 'r');
+adc1 = animatedline('Color', 'c');
+adc2 = animatedline('Color', 'g');
+adc3 = animatedline('Color', 'm');
+adc4 = animatedline('Color', 'b');
+adc5 = animatedline('Color', 'y');
+
+
+while true
+    senales{1}(valorn) = str2double(readline(puertoserial));
+    senales{2}(valorn) = str2double(readline(puertoserial));
+    senales{3}(valorn) = str2double(readline(puertoserial));
+    senales{4}(valorn) = str2double(readline(puertoserial));
+    senales{5}(valorn) = str2double(readline(puertoserial));
+    senales{6}(valorn) = str2double(readline(puertoserial));
+    
+    voltage_adc_0 = (senales{1}(valorn) * 3.3)/ 4095;
+    voltage_adc_1 = (senales{2}(valorn) * 3.3)/ 4095;
+    voltage_adc_2 = (senales{3}(valorn) * 3.3)/ 4095;
+    voltage_adc_3 = (senales{4}(valorn) * 3.3)/ 4095;
+    voltage_adc_4 = (senales{5}(valorn) * 3.3)/ 4095;
+    voltage_adc_5 = (senales{6}(valorn) * 3.3)/ 4095;
+
+    addpoints(adc0, tiempo(valorn), voltage_adc_0);
+    addpoints(adc1, tiempo(valorn), voltage_adc_1);
+    addpoints(adc2, tiempo(valorn), voltage_adc_2); 
+    addpoints(adc3, tiempo(valorn), voltage_adc_3);
+    addpoints(adc4, tiempo(valorn), voltage_adc_4);
+    addpoints(adc5, tiempo(valorn), voltage_adc_5);
+    drawnow
+
+    valorn = valorn + 1;
+    if valorn == muestras
+        break
+    end
+end
+

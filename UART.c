@@ -1,38 +1,64 @@
 #include "lib/include.h"
 
-extern void Configurar_UART0(void)
+// MI configuración UART5 que corresponde al PE4(59Rx) y PE5(60Tx)
+
+extern void Configurar_UART5(void)
 {
-    SYSCTL->RCGCUART  = (1<<0);   //Paso 1 (RCGCUART) pag.344 UART/modulo0 0->Disable 1->Enable
-    SYSCTL->RCGCGPIO |= (1<<0);     //Paso 2 (RCGCGPIO) pag.340 Enable clock port A
+    ///////////////////  CONFIGURACIÓN PINES /////////////////////
+    // Habilitar RELOJES <UART> y <GPIO> con REGISTROS
+    SYSCTL->RCGCUART  = (1<<5);     //Paso 1 (RCGCUART) pag.344 UART/modulo0 0->Disable 1->Enable
+    SYSCTL->RCGCGPIO |= (1<<4);     //Paso 2 (RCGCGPIO) pag.340 Enable clock port E
+    
     //(GPIOAFSEL) pag.671 Enable alternate function
-    GPIOA_AHB->AFSEL = (1<<1) | (1<<0);
-    //GPIO Port Control (GPIOPCTL) PA0-> U0Rx PA1-> U0Tx pag.688
-    GPIOA_AHB->PCTL = (GPIOA_AHB->PCTL&0xFFFFFF00) | 0x00000011;// (1<<0) | (1<<4);//0x00000011
+    GPIOE_AHB->AFSEL = (1<<4) | (1<<5); // Habilita función alternativa en el pin E4 y E5
+    
+    //GPIO Port Control (GPIOPCTL) to assign the UART signals to the appropriate pins
+    //PE4-> U5Rx PE5-> U5Tx                                 
+    //GPIOA_AHB->PCTL = (GPIOA_AHB->PCTL&0xFFFFFF00) | 0x00000011;// (1<<0) | (1<<4);//0x00000011
+
+    GPIOE_AHB->PCTL =  0x00110000;// (1<<5) | (1<<4);//0x00000011
+    
     // GPIO Digital Enable (GPIODEN) pag.682
-    GPIOA_AHB->DEN = (1<<0) | (1<<1);//PA1 PA0
-    //UART0 UART Control (UARTCTL) pag.918 DISABLE!!
-    UART0->CTL = (0<<9) | (0<<8) | (0<<0);
+    GPIOE_AHB->DEN = (1<<4) | (1<<5);  //PE4 PE5
+    
+
+    /////////////////// CONFIGURACIÓN UART /////////////////////
+    //UART Control (UARTCTL) pag.918 DISABLE!!
+    UART5->CTL = (0<<9) | (0<<8) | (0<<0);
+    //            RXE       TXE    UARTEN (UARTENable)
 
     // UART Integer Baud-Rate Divisor (UARTIBRD) pag.914
     /*
     BRD = 20,000,000 / (16 * 9600) = 130.2
+        = 40,000,000 / (16 * 28800) = 86.805
+    BRD = 20,000,000 / (16 *115200) = 10.850
+
     UARTFBRD[DIVFRAC] = integer(0.2 * 64 + 0.5) = 14
+                               (0.805 * 64 + 0.5) = 52.02
+    UARTFBRD[DIVFRAC] = integer(0.850 * 64 + 0.5) = 54.9
+
     */
-    UART0->IBRD = 130;
+    UART5->IBRD = 10;
+    
     // UART Fractional Baud-Rate Divisor (UARTFBRD) pag.915
-    UART0->FBRD = 14;
-    //  UART Line Control (UARTLCRH) pag.916
-    UART0->LCRH = (0x3<<5)|(1<<4);
+    UART5->FBRD = 54;
+    
+    //  UART Line Control (UARTLCRH) pag. 916 Serial parameters such as data length, parity, and stop bit selection are implemented in this register.
+    UART5->LCRH = (0x3<<5);      //PARA TENER 8 bits(0x3)
+    //UART5->LCRH = (0x3<<5)|(1<<4);  |(1<<4) activar el bit de paridad pero solo se emplea con el uart0
+    
     //  UART Clock Configuration(UARTCC) pag.939
-    UART0->CC =(0<<0);
+    UART5->CC =(0<<0);      //usaremos el reloj PRINCIPAL
+    
     //Disable UART0 UART Control (UARTCTL) pag.918
-    UART0->CTL = (1<<0) | (1<<8) | (1<<9);
+    UART5->CTL = (1<<0) | (1<<8) | (1<<9);
+    //            RXE       TXE      UARTEN
 
 
 
 }
 
-extern char readChar(void)
+/*extern char readChar(void)
 {
     //UART FR flag pag 911
     //UART DR data 906
@@ -42,21 +68,24 @@ extern char readChar(void)
     v = UART0->DR & 0xFF;
     c = v;
     return c;
-}
+}*/
+
 extern void printChar(char c)
 {
-    while((UART0->FR & (1<<5)) != 0 );
-    UART0->DR = c;
+    while((UART5->FR & (1<<5)) != 0 );
+    UART5->DR = c;
 }
-extern void printString(char* string)
+
+extern void printString(char *string) //enviar una cadena
 {
     while(*string)
     {
         printChar(*(string++));
+        
     }
 }
 
-extern char * readString(char delimitador)
+/*extern char * readString(char delimitador)
 {
 
    int i=0;
@@ -75,7 +104,8 @@ extern char * readString(char delimitador)
 
    return string;
 
-}
+}*/
+
 //Experimento 2
 
 //El envio es su nombre  (rave) 
